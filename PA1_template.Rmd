@@ -5,20 +5,84 @@ output:
     keep_md: true
 ---
 
+### Author: Wellintton Perez 2018
+
+Loading some packages we will need later
+```{r results="hide"}
+warn.conflicts = FALSE
+library(dplyr,quietly=TRUE)
+library(ggplot2,quietly=TRUE)
+```
 
 ## Loading and preprocessing the data
+```{r echo=TRUE}
+location=getwd() #use the current working directory
 
+url<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+filename<-"activity.csv"
 
+data_location<-file.path(location,"data") # creates a repository to keep the raw data
 
+data_file<-file.path(data_location,filename) #concat path and file name
+
+#if the directory data does not existing download fresh data
+if(!file.exists(data_file)){
+  message("Download the activity data set.")
+  rawdata<-tempfile()
+  rawdata<-paste(rawdata,".zip")
+  download.file(url,rawdata) #download data from the URL
+  unzip(rawdata,exdir=data_location)
+}
+
+data=read.csv2(data_file,sep=",") #Reading the file
+
+data$date=as.Date(data$date)  #need to convert to date
+
+```
 ## What is mean total number of steps taken per day?
+```{r}
+#group by date to summarize the data
+by_date<-group_by(data,date) 
 
+by_date<-na.omit(by_date) #removing missing values 
+
+steps_per_day<-summarize(by_date,
+                         obs=n(),
+                         total_steps=sum(steps),
+                         average_steps=mean(steps))
+```
+### Histogram of the total number of steps taken each day
+```{r}
+#histogram
+ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
+  ggtitle("Histogram of total steps per day")+
+  xlab("Total steps")+
+  ylab("Frequency")
+```
+
+### This is a table containing the calculated mean and median steps per day
+```{r xtable,results="asis"}
+library(xtable,quietly=TRUE)
+table_avg_steps<-xtable(steps_per_day)
+print(table_avg_steps,type="html")
+```
 
 
 ## What is the average daily activity pattern?
+```{r}
+ggplot(steps_per_day,aes(dates,average_steps))+geom_point(aes(date))
+```
 
-
+### 5. The 5-minute interval that, on average, contains the maximum number of steps
+```{r}
+ggplot(steps_per_day,aes(x=date,color=date))+geom_point(aes(y=total_steps))
+head(data[order(-data$steps),]) #top 6 steps per 5 minute intervals
+```
 
 ## Imputing missing values
+```{r}
+warn.conflicts = FALSE
+library(mice,quietly = TRUE)
 
 
 
