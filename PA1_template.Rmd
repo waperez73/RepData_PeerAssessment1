@@ -14,7 +14,7 @@ library(dplyr,quietly=TRUE)
 library(ggplot2,quietly=TRUE)
 ```
 
-## Loading and preprocessing the data
+## 1. Loading and preprocessing the data
 ```{r echo=TRUE}
 location=getwd() #use the current working directory
 
@@ -40,11 +40,14 @@ data$date=as.Date(data$date)  #need to convert to date
 
 ```
 ## What is mean total number of steps taken per day?
-```{r}
-#group by date to summarize the data
-by_date<-group_by(data,date) 
 
-by_date<-na.omit(by_date) #removing missing values 
+calculating the number of steps taken per day
+```{r}
+
+data_with_no_na<-na.omit(data) #removing missing values 
+
+#group by date to summarize the data
+by_date<-group_by(data_with_no_na,date) 
 
 steps_per_day<-summarize(by_date,
                          obs=n(),
@@ -67,23 +70,91 @@ table_avg_steps<-xtable(steps_per_day)
 print(table_avg_steps,type="html")
 ```
 
-
 ## What is the average daily activity pattern?
+### 1. Time series plot showing the number of steps taken on average across all days
 ```{r}
-ggplot(steps_per_day,aes(dates,average_steps))+geom_point(aes(date))
+average_steps_ts<-ts(steps_per_day$average_steps,frequency = 1)
+plot.ts(average_steps_ts,xy.labels=c("Time series","Average steps per day"))
+title("Average number of steps taken per day")
 ```
 
-### 5. The 5-minute interval that, on average, contains the maximum number of steps
+### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 ```{r}
-ggplot(steps_per_day,aes(x=date,color=date))+geom_point(aes(y=total_steps))
-head(data[order(-data$steps),]) #top 6 steps per 5 minute intervals
+highest<-data[order(-data$steps),]
+head(highest) #top 6 steps per 5 minute intervals
 ```
+The 5-minute interval with the highest number of steps if interval `r highest[[3]][1]` with `r highest[[1]][1]` steps. 
 
 ## Imputing missing values
+### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
+```{r}
+temp_NA<-is.na(data)
+missing_values<-length(data[temp_NA])
+```
+####The total number of missing values in the dataset is `r missing_values`.
+
+### 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+After careful analysis of the dataset I decided to set all missing values to zero.  The reason is that the complete day was missing values so I could not find a good method to impute the missing values.
+
+### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
 warn.conflicts = FALSE
-library(mice,quietly = TRUE)
+data[is.na(data$steps),][[1]]<-0.001 #fill in missing values with zero
 
+#group by date to summarize the data
+by_date<-group_by(data,date) 
 
+steps_per_day<-summarize(by_date,
+                         obs=n(),
+                         total_steps=sum(steps),
+                         average_steps=mean(steps),
+                         median_steps=median(steps))
+```
+### 4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
+```{r}
+#histogram
+ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
+  ggtitle("Histogram of total steps per day")+
+  xlab("Total steps")+
+  ylab("Frequency")
+```
+
+### This is a table containing the calculated mean and median steps per day after imputing the missing values
+```{r xtable2,results="asis"}
+library(xtable,quietly=TRUE)
+table_avg_steps<-xtable(steps_per_day)
+print(table_avg_steps,type="html")
+```
+
+#### Do these values differ from the estimates from the first part of the assignment? 
+#### What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+```{r}
+#simple function to determine the weekend from weekday
+isWeekDay<-function(days){
+  temp<-c()
+  for(day in days){
+    if(day=='Saturday'|day=='Sunday')
+      temp<-c(temp,"weekend")
+    else
+      temp<-c(temp,"weekday")
+  }
+  return(temp)
+}
+
+data_day<-mutate(steps_per_day,weekday=factor(isWeekDay(weekdays(steps_per_day$date)))) #mutate to add a new column with the week day
+
+```
+### Panel plot containing the time series 
+```{r}
+xyplot(total_steps ~ weekday|weekday, 
+           data = data_day,
+           type = "l",
+           xlab = "Interval",
+           ylab = "Number of steps",
+           layout=c(1,2))
+```
