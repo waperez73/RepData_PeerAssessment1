@@ -84,7 +84,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 20:43:26 2018 -->
+<!-- Thu May 10 20:52:23 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-02 </td> <td align="right"> 126 </td> <td align="right"> 0.44 </td> <td align="right"> 0.00 </td> </tr>
@@ -169,7 +169,7 @@ head(highest) #top 6 steps per 5 minute intervals
 ## 4136    786 2012-10-15      835
 ## 10194   785 2012-11-05      925
 ```
-The 5-minute interval with the highest number of steps if interval 615 with 806 steps. 
+### The 5-minute interval with the highest number of steps if interval 615 with 806 steps. 
 
 ## Imputing missing values
 ### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
@@ -228,7 +228,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 20:43:27 2018 -->
+<!-- Thu May 10 20:52:24 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-01 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> </tr>

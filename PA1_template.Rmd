@@ -87,7 +87,7 @@ title("Average number of steps taken per day")
 highest<-data[order(-data$steps),]
 head(highest) #top 6 steps per 5 minute intervals
 ```
-The 5-minute interval with the highest number of steps if interval `r highest[[3]][1]` with `r highest[[1]][1]` steps. 
+### The 5-minute interval with the highest number of steps if interval `r highest[[3]][1]` with `r highest[[1]][1]` steps. 
 
 ## Imputing missing values
 ### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
