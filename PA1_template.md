@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+## Reproducible Research: Peer Assessment 1
 
 ### Author: Wellintton Perez 2018
 
@@ -75,7 +70,7 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
 
 ### This is a table containing the calculated mean and median steps per day
 
@@ -89,7 +84,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 20:07:59 2018 -->
+<!-- Thu May 10 20:43:26 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-02 </td> <td align="right"> 126 </td> <td align="right"> 0.44 </td> <td align="right"> 0.00 </td> </tr>
@@ -156,7 +151,7 @@ plot.ts(average_steps_ts,xy.labels=c("Time series","Average steps per day"))
 title("Average number of steps taken per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
 
 ### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -220,7 +215,7 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
 
 ### This is a table containing the calculated mean and median steps per day after imputing the missing values
 
@@ -233,7 +228,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 20:08:00 2018 -->
+<!-- Thu May 10 20:43:27 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-01 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> </tr>
@@ -304,6 +299,7 @@ print(table_avg_steps,type="html")
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+Yes the weekend have more activity.
 ### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
 ```r
@@ -327,13 +323,6 @@ data_day<-mutate(steps_per_day,weekday=factor(isWeekDay(weekdays(steps_per_day$d
 average_steps_ts<-ts(data_day$average_steps,frequency = 1)
 data_weekday_ts<-mutate(data_day,average_steps_ts)
 library(lattice,quietly = TRUE)
-```
-
-```
-## Warning: package 'lattice' was built under R version 3.4.4
-```
-
-```r
 xyplot(average_steps_ts ~ date|weekday,
            data = data_weekday_ts,
            type = "l",
@@ -342,4 +331,4 @@ xyplot(average_steps_ts ~ date|weekday,
            layout=c(1,2))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)

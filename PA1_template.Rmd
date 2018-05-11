@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+## Reproducible Research: Peer Assessment 1
 
 ### Author: Wellintton Perez 2018
 
@@ -145,6 +140,7 @@ print(table_avg_steps,type="html")
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+Yes the weekend have more activity.
 ### Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 ```{r}
 #simple function to determine the weekend from weekday
