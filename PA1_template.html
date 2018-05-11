@@ -126,21 +126,13 @@ $(document).ready(function () {
 <h3>Author: Wellintton Perez 2018</h3>
 <p>Loading some packages we will need later</p>
 <pre class="r"><code>warn.conflicts = FALSE
-library(dplyr,quietly=TRUE)</code></pre>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(ggplot2,quietly=TRUE)</code></pre>
-<pre><code>## Warning: package 'ggplot2' was built under R version 3.4.4</code></pre>
+library(dplyr,quietly=TRUE)
+library(ggplot2,quietly=TRUE)</code></pre>
 </div>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>1. Loading and preprocessing the data</h2>
-<pre class="r"><code>location=getwd() #use the current working directory
+<pre class="r"><code>warn.conflicts = FALSE
+location=getwd() #use the current working directory
 
 url&lt;-&quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;
 filename&lt;-&quot;activity.csv&quot;
@@ -165,18 +157,23 @@ data$date=as.Date(data$date)  #need to convert to date</code></pre>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
 <p>calculating the number of steps taken per day</p>
-<pre class="r"><code>data_with_no_na&lt;-na.omit(data) #removing missing values 
+<pre class="r"><code>data_with_no_na&lt;-na.omit(data) #removing missing values
 
 #group by date to summarize the data
 by_date&lt;-group_by(data_with_no_na,date) 
 
+myfunc&lt;-function(x){
+  return(median(x))
+  }
+
 steps_per_day&lt;-summarize(by_date,
-                         obs=n(),
                          total_steps=sum(steps),
-                         average_steps=mean(steps))</code></pre>
+                         average_steps=mean(steps),
+                         median=myfunc(steps))</code></pre>
 <div id="histogram-of-the-total-number-of-steps-taken-each-day" class="section level3">
 <h3>Histogram of the total number of steps taken each day</h3>
 <pre class="r"><code>#histogram
+warn.conflicts = FALSE
 ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
   ggtitle(&quot;Histogram of total steps per day&quot;)+
   xlab(&quot;Total steps&quot;)+
@@ -186,12 +183,14 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 </div>
 <div id="this-is-a-table-containing-the-calculated-mean-and-median-steps-per-day" class="section level3">
 <h3>This is a table containing the calculated mean and median steps per day</h3>
-<pre class="r"><code>library(xtable,quietly=TRUE)</code></pre>
-<pre><code>## Warning: package 'xtable' was built under R version 3.4.4</code></pre>
-<pre class="r"><code>table_avg_steps&lt;-xtable(steps_per_day)
+<pre class="r"><code>warn.conflicts = FALSE
+library(xtable,quietly=TRUE)
+steps_table&lt;-steps_per_day
+steps_table$date&lt;-as.character(steps_table$date)
+table_avg_steps&lt;-xtable(steps_table)
 print(table_avg_steps,type=&quot;html&quot;)</code></pre>
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Wed May 09 21:57:50 2018 -->
+<!-- Thu May 10 20:07:59 2018 -->
 <table border="1">
 <tr>
 <th>
@@ -200,24 +199,21 @@ print(table_avg_steps,type=&quot;html&quot;)</code></pre>
 date
 </th>
 <th>
-obs
-</th>
-<th>
 total_steps
 </th>
 <th>
 average_steps
+</th>
+<th>
+median
 </th>
 </tr>
 <tr>
 <td align="right">
 1
 </td>
-<td align="right">
-15615.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-02
 </td>
 <td align="right">
 126
@@ -225,16 +221,16 @@ average_steps
 <td align="right">
 0.44
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 2
 </td>
-<td align="right">
-15616.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-03
 </td>
 <td align="right">
 11352
@@ -242,16 +238,16 @@ average_steps
 <td align="right">
 39.42
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 3
 </td>
-<td align="right">
-15617.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-04
 </td>
 <td align="right">
 12116
@@ -259,16 +255,16 @@ average_steps
 <td align="right">
 42.07
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 4
 </td>
-<td align="right">
-15618.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-05
 </td>
 <td align="right">
 13294
@@ -276,16 +272,16 @@ average_steps
 <td align="right">
 46.16
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 5
 </td>
-<td align="right">
-15619.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-06
 </td>
 <td align="right">
 15420
@@ -293,16 +289,16 @@ average_steps
 <td align="right">
 53.54
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 6
 </td>
-<td align="right">
-15620.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-07
 </td>
 <td align="right">
 11015
@@ -310,16 +306,16 @@ average_steps
 <td align="right">
 38.25
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 7
 </td>
-<td align="right">
-15622.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-09
 </td>
 <td align="right">
 12811
@@ -327,16 +323,16 @@ average_steps
 <td align="right">
 44.48
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 8
 </td>
-<td align="right">
-15623.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-10
 </td>
 <td align="right">
 9900
@@ -344,16 +340,16 @@ average_steps
 <td align="right">
 34.38
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 9
 </td>
-<td align="right">
-15624.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-11
 </td>
 <td align="right">
 10304
@@ -361,16 +357,16 @@ average_steps
 <td align="right">
 35.78
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 10
 </td>
-<td align="right">
-15625.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-12
 </td>
 <td align="right">
 17382
@@ -378,16 +374,16 @@ average_steps
 <td align="right">
 60.35
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 11
 </td>
-<td align="right">
-15626.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-13
 </td>
 <td align="right">
 12426
@@ -395,16 +391,16 @@ average_steps
 <td align="right">
 43.15
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 12
 </td>
-<td align="right">
-15627.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-14
 </td>
 <td align="right">
 15098
@@ -412,16 +408,16 @@ average_steps
 <td align="right">
 52.42
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 13
 </td>
-<td align="right">
-15628.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-15
 </td>
 <td align="right">
 10139
@@ -429,16 +425,16 @@ average_steps
 <td align="right">
 35.20
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 14
 </td>
-<td align="right">
-15629.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-16
 </td>
 <td align="right">
 15084
@@ -446,16 +442,16 @@ average_steps
 <td align="right">
 52.38
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 15
 </td>
-<td align="right">
-15630.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-17
 </td>
 <td align="right">
 13452
@@ -463,16 +459,16 @@ average_steps
 <td align="right">
 46.71
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 16
 </td>
-<td align="right">
-15631.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-18
 </td>
 <td align="right">
 10056
@@ -480,16 +476,16 @@ average_steps
 <td align="right">
 34.92
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 17
 </td>
-<td align="right">
-15632.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-19
 </td>
 <td align="right">
 11829
@@ -497,16 +493,16 @@ average_steps
 <td align="right">
 41.07
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 18
 </td>
-<td align="right">
-15633.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-20
 </td>
 <td align="right">
 10395
@@ -514,16 +510,16 @@ average_steps
 <td align="right">
 36.09
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 19
 </td>
-<td align="right">
-15634.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-21
 </td>
 <td align="right">
 8821
@@ -531,16 +527,16 @@ average_steps
 <td align="right">
 30.63
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 20
 </td>
-<td align="right">
-15635.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-22
 </td>
 <td align="right">
 13460
@@ -548,16 +544,16 @@ average_steps
 <td align="right">
 46.74
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 21
 </td>
-<td align="right">
-15636.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-23
 </td>
 <td align="right">
 8918
@@ -565,16 +561,16 @@ average_steps
 <td align="right">
 30.97
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 22
 </td>
-<td align="right">
-15637.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-24
 </td>
 <td align="right">
 8355
@@ -582,16 +578,16 @@ average_steps
 <td align="right">
 29.01
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 23
 </td>
-<td align="right">
-15638.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-25
 </td>
 <td align="right">
 2492
@@ -599,16 +595,16 @@ average_steps
 <td align="right">
 8.65
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 24
 </td>
-<td align="right">
-15639.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-26
 </td>
 <td align="right">
 6778
@@ -616,16 +612,16 @@ average_steps
 <td align="right">
 23.53
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 25
 </td>
-<td align="right">
-15640.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-27
 </td>
 <td align="right">
 10119
@@ -633,16 +629,16 @@ average_steps
 <td align="right">
 35.14
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 26
 </td>
-<td align="right">
-15641.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-28
 </td>
 <td align="right">
 11458
@@ -650,16 +646,16 @@ average_steps
 <td align="right">
 39.78
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 27
 </td>
-<td align="right">
-15642.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-29
 </td>
 <td align="right">
 5018
@@ -667,16 +663,16 @@ average_steps
 <td align="right">
 17.42
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 28
 </td>
-<td align="right">
-15643.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-30
 </td>
 <td align="right">
 9819
@@ -684,16 +680,16 @@ average_steps
 <td align="right">
 34.09
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 29
 </td>
-<td align="right">
-15644.00
-</td>
-<td align="right">
-288
+<td>
+2012-10-31
 </td>
 <td align="right">
 15414
@@ -701,16 +697,16 @@ average_steps
 <td align="right">
 53.52
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 30
 </td>
-<td align="right">
-15646.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-02
 </td>
 <td align="right">
 10600
@@ -718,16 +714,16 @@ average_steps
 <td align="right">
 36.81
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 31
 </td>
-<td align="right">
-15647.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-03
 </td>
 <td align="right">
 10571
@@ -735,16 +731,16 @@ average_steps
 <td align="right">
 36.70
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 32
 </td>
-<td align="right">
-15649.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-05
 </td>
 <td align="right">
 10439
@@ -752,16 +748,16 @@ average_steps
 <td align="right">
 36.25
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 33
 </td>
-<td align="right">
-15650.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-06
 </td>
 <td align="right">
 8334
@@ -769,16 +765,16 @@ average_steps
 <td align="right">
 28.94
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 34
 </td>
-<td align="right">
-15651.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-07
 </td>
 <td align="right">
 12883
@@ -786,16 +782,16 @@ average_steps
 <td align="right">
 44.73
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 35
 </td>
-<td align="right">
-15652.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-08
 </td>
 <td align="right">
 3219
@@ -803,16 +799,16 @@ average_steps
 <td align="right">
 11.18
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 36
 </td>
-<td align="right">
-15655.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-11
 </td>
 <td align="right">
 12608
@@ -820,16 +816,16 @@ average_steps
 <td align="right">
 43.78
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 37
 </td>
-<td align="right">
-15656.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-12
 </td>
 <td align="right">
 10765
@@ -837,16 +833,16 @@ average_steps
 <td align="right">
 37.38
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 38
 </td>
-<td align="right">
-15657.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-13
 </td>
 <td align="right">
 7336
@@ -854,16 +850,16 @@ average_steps
 <td align="right">
 25.47
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 39
 </td>
-<td align="right">
-15659.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-15
 </td>
 <td align="right">
 41
@@ -871,16 +867,16 @@ average_steps
 <td align="right">
 0.14
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 40
 </td>
-<td align="right">
-15660.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-16
 </td>
 <td align="right">
 5441
@@ -888,16 +884,16 @@ average_steps
 <td align="right">
 18.89
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 41
 </td>
-<td align="right">
-15661.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-17
 </td>
 <td align="right">
 14339
@@ -905,16 +901,16 @@ average_steps
 <td align="right">
 49.79
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 42
 </td>
-<td align="right">
-15662.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-18
 </td>
 <td align="right">
 15110
@@ -922,16 +918,16 @@ average_steps
 <td align="right">
 52.47
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 43
 </td>
-<td align="right">
-15663.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-19
 </td>
 <td align="right">
 8841
@@ -939,16 +935,16 @@ average_steps
 <td align="right">
 30.70
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 44
 </td>
-<td align="right">
-15664.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-20
 </td>
 <td align="right">
 4472
@@ -956,16 +952,16 @@ average_steps
 <td align="right">
 15.53
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 45
 </td>
-<td align="right">
-15665.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-21
 </td>
 <td align="right">
 12787
@@ -973,16 +969,16 @@ average_steps
 <td align="right">
 44.40
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 46
 </td>
-<td align="right">
-15666.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-22
 </td>
 <td align="right">
 20427
@@ -990,16 +986,16 @@ average_steps
 <td align="right">
 70.93
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 47
 </td>
-<td align="right">
-15667.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-23
 </td>
 <td align="right">
 21194
@@ -1007,16 +1003,16 @@ average_steps
 <td align="right">
 73.59
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 48
 </td>
-<td align="right">
-15668.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-24
 </td>
 <td align="right">
 14478
@@ -1024,16 +1020,16 @@ average_steps
 <td align="right">
 50.27
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 49
 </td>
-<td align="right">
-15669.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-25
 </td>
 <td align="right">
 11834
@@ -1041,16 +1037,16 @@ average_steps
 <td align="right">
 41.09
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 50
 </td>
-<td align="right">
-15670.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-26
 </td>
 <td align="right">
 11162
@@ -1058,16 +1054,16 @@ average_steps
 <td align="right">
 38.76
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 51
 </td>
-<td align="right">
-15671.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-27
 </td>
 <td align="right">
 13646
@@ -1075,16 +1071,16 @@ average_steps
 <td align="right">
 47.38
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 52
 </td>
-<td align="right">
-15672.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-28
 </td>
 <td align="right">
 10183
@@ -1092,22 +1088,25 @@ average_steps
 <td align="right">
 35.36
 </td>
+<td align="right">
+0.00
+</td>
 </tr>
 <tr>
 <td align="right">
 53
 </td>
-<td align="right">
-15673.00
-</td>
-<td align="right">
-288
+<td>
+2012-11-29
 </td>
 <td align="right">
 7047
 </td>
 <td align="right">
 24.47
+</td>
+<td align="right">
+0.00
 </td>
 </tr>
 </table>
@@ -1153,16 +1152,18 @@ missing_values&lt;-length(data[temp_NA])</code></pre>
 <div id="create-a-new-dataset-that-is-equal-to-the-original-dataset-but-with-the-missing-data-filled-in." class="section level3">
 <h3>3. Create a new dataset that is equal to the original dataset but with the missing data filled in.</h3>
 <pre class="r"><code>warn.conflicts = FALSE
-data[is.na(data$steps),][[1]]&lt;-0.001 #fill in missing values with zero
+
+data[is.na(data$steps),][[1]]&lt;-0 #fill in missing values with zero
 
 #group by date to summarize the data
-by_date&lt;-group_by(data_with_no_na,date) 
+by_date&lt;-group_by(data,date) 
+
+by_date&lt;-mutate(by_date,interval_total=cumsum(interval))
 
 steps_per_day&lt;-summarize(by_date,
-                         obs=n(),
                          total_steps=sum(steps),
                          average_steps=mean(steps),
-                         median_steps=median(steps))</code></pre>
+                         median=median(steps))</code></pre>
 </div>
 <div id="make-a-histogram-of-the-total-number-of-steps-taken-each-day-and-calculate-and-report-the-mean-and-median-total-number-of-steps-taken-per-day." class="section level3">
 <h3>4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.</h3>
@@ -1172,15 +1173,17 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
   xlab(&quot;Total steps&quot;)+
   ylab(&quot;Frequency&quot;)</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 </div>
 <div id="this-is-a-table-containing-the-calculated-mean-and-median-steps-per-day-after-imputing-the-missing-values" class="section level3">
 <h3>This is a table containing the calculated mean and median steps per day after imputing the missing values</h3>
 <pre class="r"><code>library(xtable,quietly=TRUE)
-table_avg_steps&lt;-xtable(steps_per_day)
+steps_table&lt;-steps_per_day
+steps_table$date&lt;-as.character(steps_table$date)
+table_avg_steps&lt;-xtable(steps_table)
 print(table_avg_steps,type=&quot;html&quot;)</code></pre>
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Wed May 09 21:57:53 2018 -->
+<!-- Thu May 10 20:08:00 2018 -->
 <table border="1">
 <tr>
 <th>
@@ -1189,30 +1192,41 @@ print(table_avg_steps,type=&quot;html&quot;)</code></pre>
 date
 </th>
 <th>
-obs
-</th>
-<th>
 total_steps
 </th>
 <th>
 average_steps
 </th>
 <th>
-median_steps
+median
 </th>
 </tr>
 <tr>
 <td align="right">
 1
 </td>
-<td align="right">
-15615.00
+<td>
+2012-10-01
 </td>
 <td align="right">
-288
+0.00
 </td>
 <td align="right">
-126
+0.00
+</td>
+<td align="right">
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+2
+</td>
+<td>
+2012-10-02
+</td>
+<td align="right">
+126.00
 </td>
 <td align="right">
 0.44
@@ -1223,16 +1237,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-2
+3
+</td>
+<td>
+2012-10-03
 </td>
 <td align="right">
-15616.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-11352
+11352.00
 </td>
 <td align="right">
 39.42
@@ -1243,16 +1254,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-3
+4
+</td>
+<td>
+2012-10-04
 </td>
 <td align="right">
-15617.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-12116
+12116.00
 </td>
 <td align="right">
 42.07
@@ -1263,16 +1271,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-4
+5
+</td>
+<td>
+2012-10-05
 </td>
 <td align="right">
-15618.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-13294
+13294.00
 </td>
 <td align="right">
 46.16
@@ -1283,16 +1288,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-5
+6
+</td>
+<td>
+2012-10-06
 </td>
 <td align="right">
-15619.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-15420
+15420.00
 </td>
 <td align="right">
 53.54
@@ -1303,16 +1305,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-6
+7
+</td>
+<td>
+2012-10-07
 </td>
 <td align="right">
-15620.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-11015
+11015.00
 </td>
 <td align="right">
 38.25
@@ -1323,16 +1322,30 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-7
+8
+</td>
+<td>
+2012-10-08
 </td>
 <td align="right">
-15622.00
+0.00
 </td>
 <td align="right">
-288
+0.00
 </td>
 <td align="right">
-12811
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+9
+</td>
+<td>
+2012-10-09
+</td>
+<td align="right">
+12811.00
 </td>
 <td align="right">
 44.48
@@ -1343,16 +1356,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-8
+10
+</td>
+<td>
+2012-10-10
 </td>
 <td align="right">
-15623.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-9900
+9900.00
 </td>
 <td align="right">
 34.38
@@ -1363,16 +1373,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-9
+11
+</td>
+<td>
+2012-10-11
 </td>
 <td align="right">
-15624.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10304
+10304.00
 </td>
 <td align="right">
 35.78
@@ -1383,16 +1390,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-10
+12
+</td>
+<td>
+2012-10-12
 </td>
 <td align="right">
-15625.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-17382
+17382.00
 </td>
 <td align="right">
 60.35
@@ -1403,16 +1407,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-11
+13
+</td>
+<td>
+2012-10-13
 </td>
 <td align="right">
-15626.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-12426
+12426.00
 </td>
 <td align="right">
 43.15
@@ -1423,16 +1424,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-12
+14
+</td>
+<td>
+2012-10-14
 </td>
 <td align="right">
-15627.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-15098
+15098.00
 </td>
 <td align="right">
 52.42
@@ -1443,16 +1441,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-13
+15
+</td>
+<td>
+2012-10-15
 </td>
 <td align="right">
-15628.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10139
+10139.00
 </td>
 <td align="right">
 35.20
@@ -1463,16 +1458,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-14
+16
+</td>
+<td>
+2012-10-16
 </td>
 <td align="right">
-15629.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-15084
+15084.00
 </td>
 <td align="right">
 52.38
@@ -1483,16 +1475,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-15
+17
+</td>
+<td>
+2012-10-17
 </td>
 <td align="right">
-15630.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-13452
+13452.00
 </td>
 <td align="right">
 46.71
@@ -1503,16 +1492,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-16
+18
+</td>
+<td>
+2012-10-18
 </td>
 <td align="right">
-15631.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10056
+10056.00
 </td>
 <td align="right">
 34.92
@@ -1523,16 +1509,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-17
+19
+</td>
+<td>
+2012-10-19
 </td>
 <td align="right">
-15632.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-11829
+11829.00
 </td>
 <td align="right">
 41.07
@@ -1543,16 +1526,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-18
+20
+</td>
+<td>
+2012-10-20
 </td>
 <td align="right">
-15633.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10395
+10395.00
 </td>
 <td align="right">
 36.09
@@ -1563,16 +1543,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-19
+21
+</td>
+<td>
+2012-10-21
 </td>
 <td align="right">
-15634.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-8821
+8821.00
 </td>
 <td align="right">
 30.63
@@ -1583,16 +1560,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-20
+22
+</td>
+<td>
+2012-10-22
 </td>
 <td align="right">
-15635.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-13460
+13460.00
 </td>
 <td align="right">
 46.74
@@ -1603,16 +1577,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-21
+23
+</td>
+<td>
+2012-10-23
 </td>
 <td align="right">
-15636.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-8918
+8918.00
 </td>
 <td align="right">
 30.97
@@ -1623,16 +1594,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-22
+24
+</td>
+<td>
+2012-10-24
 </td>
 <td align="right">
-15637.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-8355
+8355.00
 </td>
 <td align="right">
 29.01
@@ -1643,16 +1611,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-23
+25
+</td>
+<td>
+2012-10-25
 </td>
 <td align="right">
-15638.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-2492
+2492.00
 </td>
 <td align="right">
 8.65
@@ -1663,16 +1628,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-24
+26
+</td>
+<td>
+2012-10-26
 </td>
 <td align="right">
-15639.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-6778
+6778.00
 </td>
 <td align="right">
 23.53
@@ -1683,16 +1645,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-25
+27
+</td>
+<td>
+2012-10-27
 </td>
 <td align="right">
-15640.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10119
+10119.00
 </td>
 <td align="right">
 35.14
@@ -1703,16 +1662,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-26
+28
+</td>
+<td>
+2012-10-28
 </td>
 <td align="right">
-15641.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-11458
+11458.00
 </td>
 <td align="right">
 39.78
@@ -1723,16 +1679,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-27
+29
+</td>
+<td>
+2012-10-29
 </td>
 <td align="right">
-15642.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-5018
+5018.00
 </td>
 <td align="right">
 17.42
@@ -1743,16 +1696,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-28
+30
+</td>
+<td>
+2012-10-30
 </td>
 <td align="right">
-15643.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-9819
+9819.00
 </td>
 <td align="right">
 34.09
@@ -1763,16 +1713,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-29
+31
+</td>
+<td>
+2012-10-31
 </td>
 <td align="right">
-15644.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-15414
+15414.00
 </td>
 <td align="right">
 53.52
@@ -1783,16 +1730,30 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-30
+32
+</td>
+<td>
+2012-11-01
 </td>
 <td align="right">
-15646.00
+0.00
 </td>
 <td align="right">
-288
+0.00
 </td>
 <td align="right">
-10600
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+33
+</td>
+<td>
+2012-11-02
+</td>
+<td align="right">
+10600.00
 </td>
 <td align="right">
 36.81
@@ -1803,16 +1764,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-31
+34
+</td>
+<td>
+2012-11-03
 </td>
 <td align="right">
-15647.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10571
+10571.00
 </td>
 <td align="right">
 36.70
@@ -1823,16 +1781,30 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-32
+35
+</td>
+<td>
+2012-11-04
 </td>
 <td align="right">
-15649.00
+0.00
 </td>
 <td align="right">
-288
+0.00
 </td>
 <td align="right">
-10439
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+36
+</td>
+<td>
+2012-11-05
+</td>
+<td align="right">
+10439.00
 </td>
 <td align="right">
 36.25
@@ -1843,16 +1815,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-33
+37
+</td>
+<td>
+2012-11-06
 </td>
 <td align="right">
-15650.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-8334
+8334.00
 </td>
 <td align="right">
 28.94
@@ -1863,16 +1832,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-34
+38
+</td>
+<td>
+2012-11-07
 </td>
 <td align="right">
-15651.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-12883
+12883.00
 </td>
 <td align="right">
 44.73
@@ -1883,16 +1849,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-35
+39
+</td>
+<td>
+2012-11-08
 </td>
 <td align="right">
-15652.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-3219
+3219.00
 </td>
 <td align="right">
 11.18
@@ -1903,16 +1866,47 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-36
+40
+</td>
+<td>
+2012-11-09
 </td>
 <td align="right">
-15655.00
+0.00
 </td>
 <td align="right">
-288
+0.00
 </td>
 <td align="right">
-12608
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+41
+</td>
+<td>
+2012-11-10
+</td>
+<td align="right">
+0.00
+</td>
+<td align="right">
+0.00
+</td>
+<td align="right">
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+42
+</td>
+<td>
+2012-11-11
+</td>
+<td align="right">
+12608.00
 </td>
 <td align="right">
 43.78
@@ -1923,16 +1917,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-37
+43
+</td>
+<td>
+2012-11-12
 </td>
 <td align="right">
-15656.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10765
+10765.00
 </td>
 <td align="right">
 37.38
@@ -1943,16 +1934,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-38
+44
+</td>
+<td>
+2012-11-13
 </td>
 <td align="right">
-15657.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-7336
+7336.00
 </td>
 <td align="right">
 25.47
@@ -1963,16 +1951,30 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-39
+45
+</td>
+<td>
+2012-11-14
 </td>
 <td align="right">
-15659.00
+0.00
 </td>
 <td align="right">
-288
+0.00
 </td>
 <td align="right">
-41
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+46
+</td>
+<td>
+2012-11-15
+</td>
+<td align="right">
+41.00
 </td>
 <td align="right">
 0.14
@@ -1983,16 +1985,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-40
+47
+</td>
+<td>
+2012-11-16
 </td>
 <td align="right">
-15660.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-5441
+5441.00
 </td>
 <td align="right">
 18.89
@@ -2003,16 +2002,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-41
+48
+</td>
+<td>
+2012-11-17
 </td>
 <td align="right">
-15661.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-14339
+14339.00
 </td>
 <td align="right">
 49.79
@@ -2023,16 +2019,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-42
+49
+</td>
+<td>
+2012-11-18
 </td>
 <td align="right">
-15662.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-15110
+15110.00
 </td>
 <td align="right">
 52.47
@@ -2043,16 +2036,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-43
+50
+</td>
+<td>
+2012-11-19
 </td>
 <td align="right">
-15663.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-8841
+8841.00
 </td>
 <td align="right">
 30.70
@@ -2063,16 +2053,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-44
+51
+</td>
+<td>
+2012-11-20
 </td>
 <td align="right">
-15664.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-4472
+4472.00
 </td>
 <td align="right">
 15.53
@@ -2083,16 +2070,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-45
+52
+</td>
+<td>
+2012-11-21
 </td>
 <td align="right">
-15665.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-12787
+12787.00
 </td>
 <td align="right">
 44.40
@@ -2103,16 +2087,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-46
+53
+</td>
+<td>
+2012-11-22
 </td>
 <td align="right">
-15666.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-20427
+20427.00
 </td>
 <td align="right">
 70.93
@@ -2123,16 +2104,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-47
+54
+</td>
+<td>
+2012-11-23
 </td>
 <td align="right">
-15667.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-21194
+21194.00
 </td>
 <td align="right">
 73.59
@@ -2143,16 +2121,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-48
+55
+</td>
+<td>
+2012-11-24
 </td>
 <td align="right">
-15668.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-14478
+14478.00
 </td>
 <td align="right">
 50.27
@@ -2163,16 +2138,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-49
+56
+</td>
+<td>
+2012-11-25
 </td>
 <td align="right">
-15669.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-11834
+11834.00
 </td>
 <td align="right">
 41.09
@@ -2183,16 +2155,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-50
+57
+</td>
+<td>
+2012-11-26
 </td>
 <td align="right">
-15670.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-11162
+11162.00
 </td>
 <td align="right">
 38.76
@@ -2203,16 +2172,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-51
+58
+</td>
+<td>
+2012-11-27
 </td>
 <td align="right">
-15671.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-13646
+13646.00
 </td>
 <td align="right">
 47.38
@@ -2223,16 +2189,13 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-52
+59
+</td>
+<td>
+2012-11-28
 </td>
 <td align="right">
-15672.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-10183
+10183.00
 </td>
 <td align="right">
 35.36
@@ -2243,19 +2206,33 @@ median_steps
 </tr>
 <tr>
 <td align="right">
-53
+60
+</td>
+<td>
+2012-11-29
 </td>
 <td align="right">
-15673.00
-</td>
-<td align="right">
-288
-</td>
-<td align="right">
-7047
+7047.00
 </td>
 <td align="right">
 24.47
+</td>
+<td align="right">
+0.00
+</td>
+</tr>
+<tr>
+<td align="right">
+61
+</td>
+<td>
+2012-11-30
+</td>
+<td align="right">
+0.00
+</td>
+<td align="right">
+0.00
 </td>
 <td align="right">
 0.00
@@ -2267,15 +2244,41 @@ median_steps
 </div>
 <div id="what-is-the-impact-of-imputing-missing-data-on-the-estimates-of-the-total-daily-number-of-steps" class="section level4">
 <h4>What is the impact of imputing missing data on the estimates of the total daily number of steps?</h4>
-<pre class="r"><code>warn.conflicts = FALSE
-library(mice,quietly = TRUE)</code></pre>
-<pre><code>## Warning: package 'mice' was built under R version 3.4.4</code></pre>
-<pre><code>## Warning: package 'lattice' was built under R version 3.4.4</code></pre>
 </div>
 </div>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+<div id="create-a-new-factor-variable-in-the-dataset-with-two-levels---weekday-and-weekend-indicating-whether-a-given-date-is-a-weekday-or-weekend-day." class="section level3">
+<h3>Create a new factor variable in the dataset with two levels - “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</h3>
+<pre class="r"><code>#simple function to determine the weekend from weekday
+isWeekDay&lt;-function(days){
+  temp&lt;-c()
+  for(day in days){
+    if(day=='Saturday'|day=='Sunday')
+      temp&lt;-c(temp,&quot;Weekend&quot;)
+    else
+      temp&lt;-c(temp,&quot;Weekday&quot;)
+  }
+  return(temp)
+}
+
+data_day&lt;-mutate(steps_per_day,weekday=factor(isWeekDay(weekdays(steps_per_day$date)))) #mutate to add a new column with the week day</code></pre>
+</div>
+<div id="panel-plot-containing-the-time-series-comparing-the-average-number-steps-weekdays-vs-weekends." class="section level3">
+<h3>Panel plot containing the time series comparing the average number steps weekdays vs weekends.</h3>
+<pre class="r"><code>average_steps_ts&lt;-ts(data_day$average_steps,frequency = 1)
+data_weekday_ts&lt;-mutate(data_day,average_steps_ts)
+library(lattice,quietly = TRUE)</code></pre>
+<pre><code>## Warning: package 'lattice' was built under R version 3.4.4</code></pre>
+<pre class="r"><code>xyplot(average_steps_ts ~ date|weekday,
+           data = data_weekday_ts,
+           type = &quot;l&quot;,
+           xlab = &quot;Interval&quot;,
+           ylab = &quot;Average Number of steps&quot;,
+           layout=c(1,2))</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAA6lBMVEUAAAAAACIAACsAAEQAAFUAJkQAJmYAKysAK4AATGYATIgAVaoAgP8rAAArACIrACsrAFUrJiIrJmYrKwArK4ArVVUrVaorc6orgNRVAABVACJVACtVAFVVJgBVK4BVTERVVVVVgIBVmYhVmcxVqqpVqv+AJgCAKwCAKyuAK1WAc0SAgCuAgFWAmWaAqoCAv4iAv8yA1P+qTACqVQCqVSuqVVWqgCuqv2aq1ICq5cyq/6qq/9Sq///UcyLUgCvUqqrU5arU5czU/9TU////mUT/qlX/v2b/1ID/5Yj/5ar/5cz//6r//9T///9fS4meAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAaf0lEQVR4nO2dC3vjuHWGOV5n4szIMzttWluzTdLG8TibNu3YatPdZq1mK8n2jKz//3cKgKQsUQCFywFwSHzv48eiLgAI6hVuJIFqAwBjqtw7AEAfEBSwBoIC1kBQwBoIClgDQQFrIChgDQQFrIGggDUQFLAGggLWQFDAGggKWANBAWsgKGANBAWsgaCANRAUsAaCAtZAUMAaCApYA0EBayAoYA0EBayBoIA1EBSwBoIC1kBQwBoIClgDQQFrIChgDQQFrIGggDUQFLAGggLWQFDAGggKWANBAWtSCJr8R8DnV1dg1on3AIJGpcCsQ1CGCRopMOsQlGGCRgrMOgRlmKCRArMOQRkmaKTArENQhgkaKTDr7AStALAjk6BfAbABggLWQFDAGggKWANBk3H3+mfx/766EP+/fHpz+IGn6UVf+OWrz1H2izcQNBn33/wo/t/9TnqqdRGCaoCgyXg4vxISfvzzO+HZwzuNbBBUAwRNhvJv+fpvn66a0vS+qlR9326oD6gmwPaF30+r6qr+xKs/QVAIGpW7N8K0N+pBbQrhHs4vXjakoPfSx5cXxIZ8cid8XlYQFIJGZfn65y+i+Gwe6gp9+c2PuxtL6ef+O6JloBoHX+8gKASNimh4Pn38LB9kE7RuUgr3thtP0w+qyt95Qel6tVTdK7RBIWhcRLkpSs/2Ydmca77abogaXfWgdl6oBb2HoBA0BXcXogkqG6DyYevbdkPW6HKwdOcFlKAQNCHLX8ke/NflL35z1dgn2dm4UGNR+++If3Ub9B6CQtC4PHx4V7culWpKuLumny43VJ9IdthfXmhEli+gFw9BY/Plkzrb2Tyo0U5VeTcbStCn6ZudF9qSFuOgEBSwBIIC1uQSFAA7MgkaHAMoAwgKWANBAWsgKGANBAWsgaCANRAUsAaCAtZAUMAaCApYA0EBayAoYA0EBayBoIA1EBSwBoIC1kBQwBoIClgDQQFrIChgDQQFrIGggDUQFLAGggLWQFDAGggKWANBAWsgKGANBAWsgaCANRAUsAaCAtZAUMCarinPN1V1qR5Of7IOFJ4sAHq6pszOFo/vbzezt/LPNlB4sgDo6Ziy/u62fXj81liEQlCQio4pjZXyoXHVIpBTegFT44MC6QizOvtLVV1HFJQsBlAGHVNWooe0OrmFoIAJXUHPFqIHfw1BARM0bVAhKDpJgAkHw0yiij/9CcNMgAm6gfrrzWY9xUA94ABOdQLWQFDAGggKWANBAWsgKGDN8AWd0EUF+AFBAWuGL2iooRDczESRdRcgaO5vgC/tgZnskHwnihd0EhzDSNHLmFxWCKr+QdEuFkckiawjEDTI0EnnESicjYvmKQRtN6Boi79oEFRLwGGZGLaLJbAYpD+GEHTnSeGKEtTREFSL92HpBixXUaoGJPkBhKBEUQ0Yyt4NBNVBKGhphSh515v68BUtqD5cMYZGGReCoDo8j4ohWAmFaLzBdeJoSxbUHGrchsY9TQlBNVALOt5CNP45dAiqw+eo9IcZoaGJLvCgTQOCGt8elaIJL5WDoBo8DsrxIKMxNPF1nKSJlSqo1Xc2lkI0cTYgqAaHg+JyXdg4DE2dC8r0yhLU/ZrFURSiEDRDDB0sWpSeLbERGJo8C4QJHpqi5gUd3DI0vYck7GLv4Rei4xJ0Js0c3vygxtOWBF3YgRs66N0/MGX1y2b67zgzLEdb5UNz5Rzd2N+wC9FB73xXmOfvfxBiDnCO+s618eRXkRFGl/r+8mEL2nk+v3wcuKCxvn7aa3pT3ls+JkHXv10MVFD5NcT9yomi3o8lhahjEnRWL+I1SEHjF0cUCfR15riX/TnYN2U9VQ1SLENjIP6AQAxRRySoRIk5vGGmRKS6L5dS1DEKimVoTIQ543NRC8Ob1RMSfqpzPb3czKvqbBE9WSZQzRORIkGS8FkJF3R2tng8720RUCXLBcq7nKOmRxI8M8GCrqfXm1V1rRZQjJwsG7yu3882JRcEVafv5xDU9OnQdiQEDQo0e7ueni3W03KqeOvvnKojHhZF6YKKDv/J7fONk59DF9RyODNVajFD52YsFyynxvitxzghBEFTBCKOITeGy/sYnqssXlB1ftRtGHRkgsa+3gOChgRanciLSuYnxktLyJLlxc5Vc0mSyhQ6N8GCPt9cq8eZUxk6AkETXncMQQMCtVfllTRQnxoIGhCoLUHnxZWg6Uh7fQovCNqglTR0Xl1HT7ZcMp6Hyg3Bqc5qi30tD0GdgKAJAhHHUBQQNEEg4hiKAoKGBBKV/Nlidhk/2XKBoAGBVie3c3k1k5OhENQJCOof6PnmUg0xlXQ9aHIgqH8gecGyFBQD9RGBoP6B2hK0vFOdCYGgAYHqNigG6qOS/E5SNlBdbud2MRMEdSRg+l3CvcgBxkEHAQT1DoSrmVIAQb0DtYJimCkmENQz0OzlShEM1EcEgrY8nleyP26/ykfPNKIOyYJ+IGiDmshG9Mgx/SIvIGjD6mwhr5F3mcC2uNntcgBBdxClqMsU4G6z20VbhmbkpJ5Rjw0aYeZnCwdBS5zdLgPlCnrwihwvchS0tNntMpBp6sb8HJiiZmBwquILnN0uPRC0oS4I3TpJBc5ulxwIWvP4vi42MczEDAhaU58ZusYqH9yAoNEDEcdQGBA0eiDiGEojzwoh+YGgAwGC+gRaT69xsUgaIKhPoPX0EoKmAYJ6BZr7zBzmm2zRQFDPQChB05Bnmc/8oJM0ECCodyB5ET5uO44NBPUNtFJ3I2HihshAUM9AcuobCeaoj4yXaxBUXQ8qwQXLkYGgfoFQgiYCgnoGQhs0DRDUNxB68UmAoJEDEcdQHBA0ciDiGIoDgkYORBxDcfi4Nnw/IehggKCRAxHHUB4etkHQl3HQBMkWDgT1CtSeSUqQbOFAUL9Abuc4Q5ItHAjqFWi7HDfOxUcGgsYNRBxDeUDQuIGIYygPCOoZCMtxpwGC+gXCctyJcLdtBH7SjINiOe4kOPs2RkH715/RBMJy3MmAoJtjE4NqAmE57mRA0KNTK+sCYTnuVEDQo5PTawM5LceNZWj8mTiTe48J6AjjI6hXssExgDIgKEEJkgXAAFUV77YSIgQFlhB0klT3aO52WycEBXaQDDOpgBhmAhHomtK//owmEKa+ATEhONVZF7iY+gbEgGrqmxXaoCAGoYso+M5RD4AdQYJ6U30FwAYIClgTLmhbzbtV8bnzDQYCQS/e8SQSBAUO5Jq4IXe+wUDINfVN7nxn4O71z+L/fXUh/n/59ObwA0/Ti51ny1ef0+wXb8LboI/vPZaaK1HQ+29+FP/vfic93XexAYJqIBD0HJ0kKx7Or4SEH//8Toj38E5jHwTVQHaq0zGG3PnOgPJv+fpvn66a0vRe/KyVks2G+oBqAogXXv1JCnon3hEfv3sjP/Um6+5nAp2kdEjNhGXyQW0KAx/OL142pKD3ykeh77ISr7YfW4oXvkixywOdpHQsX/8sLWse6gpdqLe7sZR+qrbA17tXn58+fq6fPU2v9K2C8YNOUjqEYlI58SBlq9uYQr/txtP0Q9W4+nXbBl22dfy9GgQojlzTL+bOdw5EuSlKz/Zh2Ry3q+3G0/SV6kHdbwUVbdFv/luWp8LZO02/vwBwLj4hdxeqo3P3Rj5se+nbDVnXy8HSbQmq6vqm8/8fH4us4SFoSpa/Uh2d5S9+I52bNp2enY0LpWPdBhWdI2WqapZ++fShzBoeVXxKHj68q5ubqsy8V+NIsiJvNlRvSfbgVce9qkvQp6lql9YnoAqEqgR1nKm+TEG/fFLFYPOghj9Vbd5sKEGfpm9exkHl42fpcKl9eMIq/vi9oBA0gIe/K7OGpxPU8a7O3PkeGveF1vB0gjpOYAuAHUSCrqduVbxPsqBAyHrxbtfVQ1BgB5ahAayBoIA1uSZu8EkWFAhVCTqrsE4SiACNoKIkdbtsGYICO0gEXbnV777JggKhEHTuOgE4BAW2hAv6fOPW/PRPFnAl4no3FAP1HnfNQdAREXVBplBB3Zuf/skCjig74xkaKOi88rkrHoKOh8nO/xhgoB4E0FbuXAVNmyzgxkSzRQwEBf5AUMCaiXaTFAgK/IGggDMTwzYlEBR4MzE+oYNA0PW0OlvM3E53QtAxMAxBVye387PFeorrQYtjEILK+UHlQrKOtx37JAuYMel5RgXJDMtSUCzHXR6DELQtQWdYjrs0Jr1PiaBqg87dLrqDoCOga2QUQ2l68VXltlw8BB0DQxE0TwwgOxAUsOZAyBiG0s2wXLm0QiHoCBiGoJuVumduVV27jNVD0OGj0TGCoWRLIcqe/P5I0/NNJd0VD4dDpBB0+AxE0HYpxNXpT52x+tnZQi7yNXurmR4cgg6fgQjaLoUoS9A9Qdff3bYPj992i1AIOnx0NtIbStgG7ax73FgpHxpXQ5OlIeI93GUxFEHrfrwoPGf7Nfzq7C+yY98RNGTmcRogKBGJBPURxurTsmRdndzyK0FhKA3a40h+cOMN1K9En/755pqboBMUoTToDyNDQduR+u5YkjRTCMqtkzRBJU/DYASdie77283j+cF5pNmlukiU2TATBCXCcBSpDy7BOOilqs3nB9eDyoH6a1XCchqojzvVVUEMR9C6p35YjZMnSwIEJWIogsqBen07kzxZEibbfyAI0zEkPrbhbVB5/mh2qaniyZOlIPZsgcVgPITsBJVdIG07kzxZCqJPF1gK5iNIe2xLu2AZghIxGEHbi0USJEvBpPMIPBmMoO3ldgmSpYCzoBz3yUjPzpLmg+BqJp9VFLILytEGhrtkZjCCbu9JGsTMIgmmBPaH4S6ZGYygCZMlwGbG1VyeDOoyq959pcwIBD38TCZRIKiOwuYHtZgTONv1eBBUR2Hzg1oJmsnQ8QhKeQALmx/UYsrVbFeTDOpS6uEIOqj5QW0mtMx1NcmwLlQdjqCDmh/UYkbLbFeTDErQY3tKl5Oy5ge1FjSDKxBUS1nzg3aPW8/kGMllGZWgdFkpaxzUQdDUtgzrSn9XQf1zVragfS9A0B4cBQ0YQSPoxR/cshkr2WAOD1OfsZYHlWj4cmSCdgf0vLNGcNuxewuURFCPLPfV6IfPrRKYUI1eDkpQix3tnBLJKOhGznIjcCpIwwX1KbiOC2oxkL+3D3SDphBUD1Ub9Pkm7UC9V557hpV0z44ksP2JUHgVZHqOEQeHzwTlbaAlqEV5Y1GfH75mL+ik8wUEAkENEJxJSt8GtapZLQXtc9KYwmSvgZFb0PRXmTgJGnZuboi9eLuTPYdfmz5Aj2qGFA5iJhAk5FvkKWj3lIfnTpKNgz5/n6oNajmUbitoX8ddVwprdICgPR8KbKkTCTpPd0+SbdvvcPyHQFC9C+GCBJUyya/Ts0uOj6ArUytUzddEvAyN9UCltaA9yner/OOKexIiaMggjh+WyXXa1X47SXRXp/5yejVrPen8oPadE00//6ig/ZV3T00aLAgENREo6EyNLxnu91j9spn+m2qG5a4ifVl2ELSnFrIsryGo6XPWFZ6JMEGbaUX0gj5//0MzbyjRHPW2vZ7te5aDRhDUPUXbzwUPxwWWoKueEnR++XgoqP8yNI6958OBxZ5Pm/vQdkMGoYKEdCQ0VUVs7AW1/QLMhC9DMzO0Qde/XWgE1cVghWv3mVjQIwc30JCRCtopVHKUoArZTzrsxc9epgbPJqh1DXOocycQBN1P0euTPrtJNA66OhgHbeZsIluGJpOgPYWr5Y7YECpoWkO9E8soqOC/DgfqlZhEw0xxBTX3NCy//yBD7Bq6fWEhqFcgJSjRMjQ9+vS9YzsMZ+4K21WhgxCUSGP/aDxCDuWepB57et+xFbTb49yLyOK40gja6dXtcCQsBA0PFBaDr6DWpVOPoDaHNYqgu9smWx0Epbw7JVnIsQra9bKvEDoWleW374+FoKa0DiqK3mRyC+oRdOCCWrw+2fRWkUdjil99Hvp2JMq8gtL8FG0pQNA0PdyUgh4WubatEIpjAUF1+AuaCHpB+2I8aFlbVhG5BXUPDEGpIOk6uArqMkAFQWPG4NpCHJCgJil7I+xW7bYjtQTHJSwK19AQlAoIGiU0BKUiraBd3yBocKCgGHqypX8rvaDeSfoJ2mlSHk3coTdlF1Gi8BCUDM8kjSNLEFQyUkEz+Ok74uorqHzfQ1CvQ+OyWy5xWQBBKQmfcs80aK8Paf9pB5U1gSkFdYxg+IJq38skqI+iJkEtuj2ODQLbeDVhXX43FtE5AEGpcVR0YnpqOfRu+fEAw/YbuwSH1ikGCEpOOkHtUw2ooyedMBBUBwQNS9Vb0El3+DT1QOoIBNW9mVNQRwNMT6MJ6hLzYd+f4si6xDEMQR2Ovk2AyLgk3v1sHEGNIwXWkULQXiBoWKKegupanhBUh30X1S5AXLII6tJMt4xa23AlObIOkUBQetgJak7EPsKJ9lVPihc0q59+jbzuC85ZoBbUUOrSHFr7WCBoBMYgqCEM0ZEtTFDPOiwa9k2+JIL6/H5NrSYIqmXggprPfppbzzEFPR65cWAEgmoZtKDymUHRngGyrILq3icV1D6eQQjq/IPPLOh++s03a/7StS/RCeo8TNy31s6YBH08r6prkmVojufGb6AvGhpBtd87paDGEK6C9sYzIkHlAgurk1uK+UEHLejOts0aitkF7S+JRyTo6mwhSk+SGZbHImhX0b5an0xQy6bF8bcm/QHdYCCoRJSiFKt8jEfQfUV73PHIgYOgTg3W3fcyCBq8ykcf87MFxSIKzuN2uQXd9Fn4oig/QY81TukOrG1MUUvQ+SnNKh+ugmb3c2cPtBL2WEgtqMurx3r3YxN0LtemgaDa940NOgi6T0RB52p0KU0nqbfZl4FjgipFhybohnLd7/yCPr6vi80kw0zcBLXpjPeuPe+TBYf+upO2O++PSdBZvZAXwTI0VnkZnqC9ASML6ti3b98nPLD5BaWLoShBmxCjF9Q2h6MRtHdkJz2BTUmvHGgCuY13Hk0VgmqBoE5pHnnJ/MbxRCGoliEK6l9TcxaUEgiaF2/PKAU1RwNBCWOwzMrxsceUMBfUqbiNQsGCcvAzh6CHoZwETX3Y7NKDoJGYbELKQRpB+2KBoGQxWB84/7HHGEwgaD8QNC8Q9AgQNC8hgnrmYNL79MibyY8aBM2L75UViQR1Km6jUJ6gAadvIpBB0E445oLapQhBo+F7aYVv22DTCXckEghKFcNgBfUPl0HQDAcNguYlg6B7ASFoAHEEDRmi4QORoMfigKBEMbgcueIF3Ql5NA6XHlUUIOgwySJoloNmkygEZUfQrWmTg43jH7X7eATKEzRoEJELYfdO2p+tgKA0MUBQx9D7j8c/afnxCEDQQUIiqEUUDkNSkShQ0LAeBg8Cp0eY7Py3+aT1x+mBoIOkHEFtkoWg7KAQ1CoGCEoSQ3GChk7gYd0OdxgzjcQYBHU9dqTTs+QBgu4QX9DAVT5KFDQ4vF0MEFQROP0iBPUIbxmDw2mnOHAQNHQCWwjqEd5R0HyH7HjK0QUNmQJ8MulZ5tIYyDUAO4JzYBsBBN0cCGq9qoiPm3VAr1CcSCdoS2iC3lgIGnUZmg3NIgqgXFhX8QCw7ySBsmE/zATKJr6g4at8gIJhf6oTlA0EBayBoIA1EBSwJpegANiRR1AeaeRN0EiBWSfeAwgalQKzDkEZJmikwKxDUIYJGikw6xCUYYJGCsw6BGWYoJECsw5BGSZopMCsD1BQALyBoIA1EBSwBoIC1kBQwBoIClgDQQFrIChgDQQFrKEX9PG80tz7uTN34+Gt9XESbFKSb58tSFM07cflRp+7SFk3J5go6zL+qrrUvkeVZ3JBV9W1+HeynX9ku3/tTfXrqd4m8gSblFYHd/JH4vFcJqf7PiJl3ZxgoqyrpNdTraFUeaYW9PnmWj7Mtz/c9vi105LMq38gLUaMCbYpzfS/cHoev/3XS60vsbJuTDBV1uukVzoDyfJMLWhzuB7f36oK4Ho9rerCrZ3Y6X8XxPWcKcEmpec/dieTisXjt3/9/ie1P2JHTm5V4urXEy/rhgRTZb3OjsxaM6WH+ga2b5HkmVrQVV2SrafClGu5m+3+vcw8RvstGRPcpvn31UkSR0Vqok4V/+WOrE7/Klx5/PViEy/rxgQ3ibJeZ0f8KOTvQtRhzTfwkj5BnuMJ2mylE7STYLMpi9b1P9F2y/SI1ESZ1fxERFbnbzfzy3Y3IgmqT3CTKOtbQZsdWL30yNgK2uyOPFxpBDUmuLN5OGdkDJQT/yiLNbEj8lv79f/9ca91EyPr2gQ3ibK+reJVd/7kdj4AQV/6LJ0C7WXuRtpvyZjgJoegm9m/bAu0zX/+e13hxsq6McFNUkFFJ6lJbacEJctzvGEm1SB5fyvrGcV27kbicVBjgnVKso+5bZlFpRl6PG2ahCLpdogwUtbNCSbK+naYSZYSTVu4PfxUeaYfqBcdunqItu7SPd80/brt3I3UA/WmBJuU5qZhfGrqfM1Pm0715qX9Fynr5gQTZb0eqJdHuxk7eenFk+UZpzoBayAoYA0EBayBoIA1EBSwBoIC1kBQwBoIClgDQQFrIChgDQQFrIGggDUQFLAGggLWQFDAGggKWANBg9iZMGKzuu75oERecA4cgaBB7Ah6XD8I6gEEDQKCxgaCBiEEXU//MK2q62airnk9m9b6u39r7taRCs/qbQjqAQQNQgkqFJzLR6GfeFSTzq2nZ4vnG3lX4+xsIe9unDe3nQJHIGgQSlA5g9e5mnmnnultJW8EvqzvtxQb6tZ08QEI6gMEDWLVlJzN1FB1k7SxdfPyymYl63gI6gEEDaIraFVTC6omL6jbpac/oAT1A4IGoS1BN21/aHX6P3KuDeEmqnhfIGgQHUG3CtYb6+k/n9Yz0KgJeiCoBxA0iD1BL+vO+mbWvCi2qrdt4VldQlAfIGgQO4IKG5txUNV5Vy6qic3kaye3L9YCFyAoYA0EBayBoIA1EBSwBoIC1kBQwBoIClgDQQFrIChgDQQFrIGggDUQFLAGggLWQFDAGggKWANBAWv+HygMZEcPAjCgAAAAAElFTkSuQmCC" /><!-- --></p>
+</div>
 </div>
 
 

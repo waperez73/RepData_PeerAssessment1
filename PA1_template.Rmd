@@ -15,7 +15,8 @@ library(ggplot2,quietly=TRUE)
 ```
 
 ## 1. Loading and preprocessing the data
-```{r echo=TRUE}
+```{r echo=TRUE,results="hide"}
+warn.conflicts = FALSE
 location=getwd() #use the current working directory
 
 url<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -44,19 +45,24 @@ data$date=as.Date(data$date)  #need to convert to date
 calculating the number of steps taken per day
 ```{r}
 
-data_with_no_na<-na.omit(data) #removing missing values 
+data_with_no_na<-na.omit(data) #removing missing values
 
 #group by date to summarize the data
 by_date<-group_by(data_with_no_na,date) 
 
+myfunc<-function(x){
+  return(median(x))
+  }
+
 steps_per_day<-summarize(by_date,
-                         obs=n(),
                          total_steps=sum(steps),
-                         average_steps=mean(steps))
+                         average_steps=mean(steps),
+                         median=myfunc(steps))
 ```
 ### Histogram of the total number of steps taken each day
 ```{r}
 #histogram
+warn.conflicts = FALSE
 ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
   ggtitle("Histogram of total steps per day")+
   xlab("Total steps")+
@@ -65,8 +71,11 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 
 ### This is a table containing the calculated mean and median steps per day
 ```{r xtable,results="asis"}
+warn.conflicts = FALSE
 library(xtable,quietly=TRUE)
-table_avg_steps<-xtable(steps_per_day)
+steps_table<-steps_per_day
+steps_table$date<-as.character(steps_table$date)
+table_avg_steps<-xtable(steps_table)
 print(table_avg_steps,type="html")
 ```
 
@@ -100,16 +109,18 @@ After careful analysis of the dataset I decided to set all missing values to zer
 ### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ```{r}
 warn.conflicts = FALSE
-data[is.na(data$steps),][[1]]<-0.001 #fill in missing values with zero
+
+data[is.na(data$steps),][[1]]<-0 #fill in missing values with zero
 
 #group by date to summarize the data
 by_date<-group_by(data,date) 
 
+by_date<-mutate(by_date,interval_total=cumsum(interval))
+
 steps_per_day<-summarize(by_date,
-                         obs=n(),
                          total_steps=sum(steps),
                          average_steps=mean(steps),
-                         median_steps=median(steps))
+                         median=median(steps))
 ```
 ### 4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 ```{r}
@@ -123,7 +134,9 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 ### This is a table containing the calculated mean and median steps per day after imputing the missing values
 ```{r xtable2,results="asis"}
 library(xtable,quietly=TRUE)
-table_avg_steps<-xtable(steps_per_day)
+steps_table<-steps_per_day
+steps_table$date<-as.character(steps_table$date)
+table_avg_steps<-xtable(steps_table)
 print(table_avg_steps,type="html")
 ```
 
@@ -139,9 +152,9 @@ isWeekDay<-function(days){
   temp<-c()
   for(day in days){
     if(day=='Saturday'|day=='Sunday')
-      temp<-c(temp,"weekend")
+      temp<-c(temp,"Weekend")
     else
-      temp<-c(temp,"weekday")
+      temp<-c(temp,"Weekday")
   }
   return(temp)
 }
@@ -149,12 +162,15 @@ isWeekDay<-function(days){
 data_day<-mutate(steps_per_day,weekday=factor(isWeekDay(weekdays(steps_per_day$date)))) #mutate to add a new column with the week day
 
 ```
-### Panel plot containing the time series 
+### Panel plot containing the time series comparing the average number steps weekdays vs weekends.
 ```{r}
-xyplot(total_steps ~ weekday|weekday, 
-           data = data_day,
+average_steps_ts<-ts(data_day$average_steps,frequency = 1)
+data_weekday_ts<-mutate(data_day,average_steps_ts)
+library(lattice,quietly = TRUE)
+xyplot(average_steps_ts ~ date|weekday,
+           data = data_weekday_ts,
            type = "l",
            xlab = "Interval",
-           ylab = "Number of steps",
+           ylab = "Average Number of steps",
            layout=c(1,2))
 ```
