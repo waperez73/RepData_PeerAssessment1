@@ -1,3 +1,10 @@
+----
+-title: "Reproducible Research: Peer Assessment 1"
+-output: 
+-  html_document:
+-    keep_md: true
+----
+
 ## Reproducible Research: Peer Assessment 1
 
 ### Author: Wellintton Perez 2018
@@ -84,7 +91,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 20:52:23 2018 -->
+<!-- Thu May 10 21:20:58 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-02 </td> <td align="right"> 126 </td> <td align="right"> 0.44 </td> <td align="right"> 0.00 </td> </tr>
@@ -228,7 +235,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 20:52:24 2018 -->
+<!-- Thu May 10 21:20:59 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-01 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> </tr>
