@@ -1,9 +1,3 @@
-----
--title: "Reproducible Research: Peer Assessment 1"
--output: 
--  html_document:
--    keep_md: true
-----
 
 ## Reproducible Research: Peer Assessment 1
 
@@ -77,7 +71,7 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-44](figure/unnamed-chunk-44-1.png)
 
 ### This is a table containing the calculated mean and median steps per day
 
@@ -91,7 +85,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 21:20:58 2018 -->
+<!-- Fri May 11 15:02:34 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-02 </td> <td align="right"> 126 </td> <td align="right"> 0.44 </td> <td align="right"> 0.00 </td> </tr>
@@ -158,25 +152,29 @@ plot.ts(average_steps_ts,xy.labels=c("Time series","Average steps per day"))
 title("Average number of steps taken per day")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-45](figure/unnamed-chunk-45-1.png)
 
 ### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```r
-highest<-data[order(-data$steps),]
+by_interval<-group_by(data_with_no_na,interval)
+total_steps<-summarize(by_interval,total=sum(steps))
+highest<-total_steps[order(-total_steps$total),]
 head(highest) #top 6 steps per 5 minute intervals
 ```
 
 ```
-##       steps       date interval
-## 16492   806 2012-11-27      615
-## 3277    802 2012-10-12      900
-## 16487   794 2012-11-27      550
-## 14201   789 2012-11-19      720
-## 4136    786 2012-10-15      835
-## 10194   785 2012-11-05      925
+## # A tibble: 6 x 2
+##   interval total
+##      <int> <int>
+## 1      835 10927
+## 2      840 10384
+## 3      850  9720
+## 4      845  9517
+## 5      830  9397
+## 6      820  9071
 ```
-### The 5-minute interval with the highest number of steps if interval 615 with 806 steps. 
+### The 5-minute interval with the highest number of steps if interval 835 with 10927 steps. 
 
 ## Imputing missing values
 ### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
@@ -185,7 +183,7 @@ head(highest) #top 6 steps per 5 minute intervals
 temp_NA<-is.na(data)
 missing_values<-length(data[temp_NA])
 ```
-####The total number of missing values in the dataset is 2304.
+#### The total number of missing values in the dataset is 2304.
 
 ### 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
@@ -222,7 +220,7 @@ ggplot(steps_per_day,aes(color=date))+geom_histogram(aes(total_steps))+
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+![plot of chunk unnamed-chunk-49](figure/unnamed-chunk-49-1.png)
 
 ### This is a table containing the calculated mean and median steps per day after imputing the missing values
 
@@ -235,7 +233,7 @@ print(table_avg_steps,type="html")
 ```
 
 <!-- html table generated in R 3.4.3 by xtable 1.8-2 package -->
-<!-- Thu May 10 21:20:59 2018 -->
+<!-- Fri May 11 15:02:35 2018 -->
 <table border=1>
 <tr> <th>  </th> <th> date </th> <th> total_steps </th> <th> average_steps </th> <th> median </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> 2012-10-01 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> <td align="right"> 0.00 </td> </tr>
@@ -334,8 +332,8 @@ xyplot(average_steps_ts ~ date|weekday,
            data = data_weekday_ts,
            type = "l",
            xlab = "Interval",
-           ylab = "Average Number of steps",
+           ylab = "Number of steps per day",
            layout=c(1,2))
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![plot of chunk unnamed-chunk-51](figure/unnamed-chunk-51-1.png)
